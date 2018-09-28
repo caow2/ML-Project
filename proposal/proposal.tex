@@ -1,0 +1,74 @@
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out
+                                                          % if you need a4paper
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4
+                                                          % paper
+
+\IEEEoverridecommandlockouts                              % This command is only
+                                                          % needed if you want to
+                                                          % use the \thanks command
+\overrideIEEEmargins
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+
+
+% The following packages can be found on http:\\www.ctan.org
+%\usepackage{graphics} % for pdf, bitmapped graphics files
+%\usepackage{epsfig} % for postscript graphics files
+%\usepackage{mathptmx} % assumes new font selection scheme installed
+%\usepackage{times} % assumes new font selection scheme installed
+%\usepackage{amsmath} % assumes amsmath package installed
+%\usepackage{amssymb}  % assumes amsmath package installed
+
+\title{\LARGE \bf
+A Decay-Based Approach to Anomaly Detection in Temporal Graph Data
+}
+
+%\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
+%         \thanks{*Use the $\backslash$thanks command to put information here}\\
+%         Faculty of Electrical Engineering, Mathematics and Computer Science\\
+%         University of Twente\\
+%         7500 AE Enschede, The Netherlands\\
+%         {\tt\small h.kwakernaak@autsubmit.com}}
+%         \hspace*{ 0.5 in}
+%         \parbox{3 in}{ \centering Pradeep Misra**
+%         \thanks{**The footnote marks may be inserted manually}\\
+%        Department of Electrical Engineering \\
+%         Wright State University\\
+%         Dayton, OH 45435, USA\\
+%         {\tt\small pmisra@cs.wright.edu}}
+%}
+
+\author{Wen Cao}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+\section{INTRODUCTION}
+\par Outlier detection for temporal data has become an increasingly difficult task due to the broad range of applications where time related data is utilized. For virtually all domains, it is of interest to discover abnormal behavior within data sets. Unfortunately, there is no one-size-fits-all model; depending on the nature of the task, there are various different methods that can be applied to find abnormality. For example, one has to identify the structure of the data set (whether it is a continuous series, discrete series, etc.) as well as the type of anomaly that is of interest (an unusual data point, an abnormal pattern within the data, etc.) and so forth. Gupta et. al [1] explains this extensively in their survey of outlier detection.
+
+\par Of the various formats that temporal data can take, it is of particular interest to study graphs as they can accurately model relational data which would be hard to represent otherwise. While there already exists several methods used for anomaly detection in temporal graph data, it is worthy to note that simply having an approach that is functional is not sufficient. Computations on graphs are often very expensive and this becomes evident as more data (in the form of edges and nodes) are added to an expanding graph. 
+
+\par The research community has proposed many solutions for this computation problem, and the overall idea is fairly simple; there exists a series of graph data over time and it is of interest to identify items, events or observations that differ from the majority of the data. This typically involves the computation of a specific value and the comparison of that value with a threshold. The majority of proposed solutions target different ways to compute this comparison value.
+
+\section{PROPOSAL AND METHODOLOGY}
+I propose to apply the decay-based method described by Wu et. al [2] towards the problem of outlier detection in temporal graph data. This approach also allows for different time granularities by choosing a $\lambda$ value that corresponds to the time frame for detection irregularity. The specific data set that will be used is the city bike data provided by the US cities of Philadelphia and Atlanta. The main aspects of this project will cover the following:
+\begin{itemize}
+    \item The city bike data from Philadelphia and Atlanta will be configured into the appropriate format to be represented as a graph. Generally speaking, a graph is represented by a set of nodes and a set of edges. This will be the desired structure for the city bike data sets. The nodes shall be the bike stations in each city and the edges shall be the corresponding bike paths between stations. All edges are undirected and there shall be a graph for each instance of time in the data set.
+    \item For each node in a graph at a time instance \textit{t}, a decay-based product matrix will be produced. This matrix will be of size \textit{n x n}, where \textit{n} is the number of nodes adjacent to the current node. Each value in the matrix will be a decay-based frequency product between the edges of the current node and the corresponding adjacent nodes. 
+    \item A characteristic vector and characteristic value is then produced from the product matrix by way of eigenvectors and eigenvalues. These are used to compute the Half-life Magnitude Change value that is used in a normalized Z-score calculation.
+    \item A lazy update approach will be applied towards the decay-based product matrices. The values of the decay-based product matrix for a node will be recomputed only when a new node is added to the node’s neighborhood. This approach is desirable because eigenvector and eigenvalue calculations are computationally expensive.
+    \item Different values will be tested for the algorithm parameters depending on the scope of outlier detection. For example, different values of $\lambda$ will detect anomalies across different time scales. This will also affect the half-life value $(\frac{1}{\lambda})$ used in the algorithm.
+\end{itemize}
+
+\section{EVALUATION}
+\par The metrics for evaluation of the method is still under debate. If time permits, an implementation of another outlier detection algorithm may be compared with the decay-based method. Wu et. al [2] noted that the main bottlenecks within their experimental results came from the eigenvector/eigenvalue calculations and the memory space required. Therefore, it is reasonable to assume that the evaluation criteria may focus on the overall performance and space complexity of the algorithm.
+
+\begin{thebibliography}{2}
+\bibitem{c1} M. Gupta, J. Gao, C. Aggarwal, J. Han, "Outlier detection for temporal data: A survey", \textit{IEEE Transactions on Knowledge and Data Engineering}, vol. 26, no. 9, pp. 2250-2267, Sept 2014.
+\bibitem{c2} W. Yu, C. C. Aggarwal, S. Ma, H. Wang, "On anomalous hotspot discovery in graph streams", \textit{2013 IEEE 13th InternationalConference on Data Mining (ICDM'13)}, pp. 1271-1276, 2013.
+\end{thebibliography}
+\end{document}
